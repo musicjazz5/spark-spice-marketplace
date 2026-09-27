@@ -1,0 +1,19 @@
+{
+  "name": "Spark SPICE Marketplace",
+  "description": "BSIM4 analog circuit design tools backed by a DGX Spark GB10.",
+  "version": "1.0.0",
+  "servers": [
+    {
+      "name": "spark-spice",
+      "displayName": "Spark SPICE Analog Design",
+      "description": "BSIM4 analog circuit design tools — gm/Id characterisation, Miller OTA sizing, LC VCO design with BSIM4 simulation. Razavi hand-design method included.",
+      "icon": "⚡",
+      "category": "EDA / Analog Design",
+      "vendor": "musicjazz5",
+      "connection": {
+        "type": "sse",
+        "url": "http://100.69.76.67:8090/sse"
+      }
+    }
+  ]
+}
