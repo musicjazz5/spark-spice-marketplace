@@ -1,0 +1,22 @@
+{
+  "model": "claude-opus-5",
+  "mcpServers": {
+    "spark-spice": {
+      "url": "sse://spark-9fd5.anthropic.com/spark-spice"
+    }
+  },
+  "permissions": {
+    "allow": [
+      "bash",
+      "read",
+      "edit",
+      "write",
+      "web_fetch",
+      "web_search"
+    ],
+    "requireApproval": []
+  },
+  "hooks": {
+    "postMessage": []
+  }
+}

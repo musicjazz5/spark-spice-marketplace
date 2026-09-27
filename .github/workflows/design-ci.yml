@@ -1,0 +1,69 @@
+name: Circuit Design CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'plugins/**'
+      - '.claude/**'
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-designs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Claude Code CLI
+        run: |
+          curl -fsSL https://apt.anthropic.com/key.gpg | sudo apt-key add -
+          echo "deb [signed-by=/usr/share/keyrings/anthropic-keyring.gpg] https://apt.anthropic.com stable main" | sudo tee /etc/apt/sources.list.d/anthropic.list
+          sudo apt update
+          sudo apt install -y anthropic
+
+      - name: Authenticate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: ant auth status
+
+      - name: Validate catalog.json
+        run: |
+          python3 -m json.tool catalog.json > /dev/null
+          echo "✓ catalog.json is valid JSON"
+
+      - name: List available spark-spice tools
+        run: ant beta:mcp list | grep spark-spice
+
+      - name: Run design spec validation
+        run: |
+          # Example: Check that each plugin has required files
+          for plugin in plugins/*/; do
+            echo "Checking $plugin..."
+            if [ ! -f "$plugin/design.json" ]; then
+              echo "Missing design.json in $plugin"
+              exit 1
+            fi
+          done
+          echo "✓ All plugins have required metadata"
+
+  test-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic
+
+      - name: Run example scripts
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python3 examples/basic_design.py
+          echo "✓ Example design ran successfully"

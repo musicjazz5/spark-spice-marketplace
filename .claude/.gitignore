@@ -1,0 +1,18 @@
+# Claude Code local settings (sensitive data)
+settings.local.json
+auth.json
+*.key
+*.pem
+
+# Session state (temporary)
+.session/
+*.session.json
+cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE local settings
+.vscode/extensions.json
+.idea/workspace.xml
