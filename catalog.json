@@ -1,0 +1,35 @@
+[
+  {
+    "name": "spark-spice",
+    "display_name": "Spark SPICE Analog Design",
+    "version": "1.0.0",
+    "description": "BSIM4 analog circuit design tools backed by a DGX Spark GB10. Characterise devices from the gm/Id table, check feasibility, size and simulate a two-stage Miller OTA or LC VCO. Razavi gm/Id hand-design method included.",
+    "category": "EDA / Analog Design",
+    "icon": "⚡",
+    "author": "musicjazz5",
+    "license": "internal",
+    "manifest_url": "https://raw.githubusercontent.com/musicjazz5/spark-spice-marketplace/main/spark-spice.json",
+
+    "mcp": {
+      "transport": "sse",
+      "url": "http://100.69.76.67:8090/sse"
+    },
+
+    "auth": {
+      "type": "api_key",
+      "header": "X-API-Key",
+      "prefix": "spk_",
+      "placeholder": "spk_xxxxxxxxxxxxxxxx",
+      "obtain_url": "http://100.69.76.67:8089/apply"
+    },
+
+    "tools": [
+      { "name": "characterize_device",  "summary": "gm/Id 設備特性表",              "latency": "fast"   },
+      { "name": "query_device_table",   "summary": "單點 gm/Id 查詢",               "latency": "fast"   },
+      { "name": "explore_design_space", "summary": "可行性分析（不模擬）",            "latency": "medium" },
+      { "name": "size_analog_block",    "summary": "Miller OTA 設計 + BSIM4 模擬", "latency": "slow"   },
+      { "name": "size_vco",             "summary": "LC VCO 設計 + 模擬",            "latency": "slow"   },
+      { "name": "recall_designs",       "summary": "歷史設計記憶查詢",               "latency": "fast"   }
+    ]
+  }
+]
