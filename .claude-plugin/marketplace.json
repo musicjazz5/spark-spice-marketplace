@@ -1,8 +1,9 @@
 {
-  "name": "Spark SPICE Marketplace",
+  "name": "spark-spice-marketplace",
+  "owner": "musicjazz5",
   "description": "BSIM4 analog circuit design tools backed by a DGX Spark GB10.",
   "version": "1.0.0",
-  "servers": [
+  "plugins": [
     {
       "name": "spark-spice",
       "displayName": "Spark SPICE Analog Design",
