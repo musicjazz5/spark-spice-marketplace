@@ -1,254 +1,113 @@
-# spark-spice-marketplace
+# Spark SPICE — Analog Design MCP for Claude Code
 
-A **Claude Code + spark-spice** marketplace for analog circuit designs. Design OTAs, comparators, gain stages, and other analog blocks using BSIM4 simulation and Razavi gm/Id methodology.
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/musicjazz5/spark-spice-marketplace
-cd spark-spice-marketplace
-```
-
-### 2. Install Claude Code
-**macOS:**
-```bash
-brew install anthropic/anthropic/anthropic-cli
-```
-
-**Linux (Ubuntu/Debian):**
-```bash
-curl -fsSL https://apt.anthropic.com/key.gpg | sudo apt-key add -
-echo "deb [signed-by=/usr/share/keyrings/anthropic-keyring.gpg] https://apt.anthropic.com stable main" | sudo tee /etc/apt/sources.list.d/anthropic.list
-sudo apt update
-sudo apt install anthropic
-```
-
-### 3. Authenticate
-```bash
-ant auth login
-```
-
-### 4. Design a Circuit
-```bash
-# Load the project config (auto-loads .claude/settings.json)
-ant query "Design a 60 dB, 50 MHz Miller OTA using Razavi gm/Id method with BSIM4 simulation"
-```
-
-That's it! Claude will:
-1. ✓ Check feasibility (explore_design_space)
-2. ✓ Recall any cached prior designs
-3. ✓ Run full BSIM4 simulation (size_analog_block)
-4. ✓ Generate a formatted design report
-
-## 📁 Repository Structure
-
-```
-spark-spice-marketplace/
-├── .claude/                    # Claude Code configuration
-│   ├── settings.json          # MCP server setup + permissions
-│   ├── CLAUDE.md              # Detailed setup & usage guide
-│   └── .gitignore            # Security: exclude local overrides
-├── .github/
-│   └── workflows/
-│       └── design-ci.yml      # GitHub Actions CI/CD
-├── plugins/                    # Published circuit designs
-│   └── miller-ota-60dB/
-│       ├── design.json        # Sizing parameters
-│       ├── netlist.cir        # SPICE netlist
-│       └── report.html        # Generated design report
-├── catalog.json               # Design index & metadata
-├── spark-spice.json          # MCP server manifest
-└── README.md                  # This file
-```
-
-## 🛠 Claude Code Configuration
-
-### MCP Server: spark-spice
-**Endpoint:** `sse://spark-9fd5.anthropic.com/spark-spice`
-
-**Available Tools:**
-- `size_analog_block` — Full BSIM4 simulation + transistor sizing
-- `characterize_device` — gm/Id sweep (device selection)
-- `explore_design_space` — Fast feasibility check (<3s)
-- `recall_designs` — Look up cached prior solutions
-- `query_device_table` — Single-point device metrics
-
-**Recommended Models:**
-| Task | Model | Cost | Time |
-|------|-------|------|------|
-| Feasibility check | Haiku 4.5 | $0.01 | <5s |
-| Full design (BSIM4) | Opus 5 | $0.50 | 55s |
-| Exploration (many specs) | Sonnet 5 | $0.15/run | 60s |
-
-### Load Project Configuration
-```bash
-# Option 1: Auto-load from .claude/settings.json
-ant query "Design ..."
-
-# Option 2: Copy to global settings
-cp .claude/settings.json ~/.claude/settings.json
-ant query "Design ..."
-
-# Option 3: Verify MCP is connected
-ant beta:mcp list
-ant status
-```
-
-## 📚 Design Examples
-
-### Miller OTA (60 dB, 50 MHz)
-```bash
-ant query "Design a 60 dB, 50 MHz Miller OTA. \
-  Constraints: 150 µW max power, 2 pF load. \
-  Use Razavi gm/Id method with BSIM4 simulation. \
-  Return: procedure (R1-R8), sizing, headroom analysis."
-```
-
-**Output includes:**
-- Procedure: 8 hand-design steps (Razavi methodology)
-- Simulated DC gain: 67.97 dB ✓
-- UGBW: 52.05 MHz ✓
-- Phase margin: 84.27° ✓
-- Noise: 17.8 nV/√Hz (white)
-- Transistor W/L ratios & operating points
-
-### Folded-Cascode OTA
-```bash
-ant query "Design a folded-cascode OTA for a 10-bit ADC. \
-  Specs: 70 dB gain, 100 MHz GBW, 1 pA input-referred noise. \
-  Power budget: 500 µW. Use BSIM4 simulation."
-```
-
-### Gain Stage Characterization
-```bash
-ant query "Characterize an NMOS differential pair at L=150nm. \
-  Sweep gm/Id from 6–20 V⁻¹. Report: intrinsic gain, fT, noise, Rout. \
-  Use spark-spice characterize_device."
-```
-
-## 🔧 Development & Contribution
-
-### Add a New Design to the Catalog
-
-1. **Run a design query:**
-   ```bash
-   ant query "Design [your spec]" > design-output.txt
-   ```
-
-2. **Save to plugins:**
-   ```bash
-   mkdir -p plugins/[design-name]
-   cp design-output.txt plugins/[design-name]/report.html
-   ```
-
-3. **Extract metadata to design.json:**
-   ```json
-   {
-     "name": "Miller OTA 60dB",
-     "spec": {
-       "gain_db": 60,
-       "gbw_Hz": 50e6,
-       "power_W": 150e-6
-     },
-     "result": {
-       "gain_db": 67.97,
-       "ugbw_Hz": 52.05e6,
-       "pm_deg": 84.27,
-       "power_W": 0.000152
-     },
-     "method": "razavi",
-     "bsim4_version": "level-54"
-   }
-   ```
-
-4. **Update catalog.json:**
-   ```bash
-   # See catalog.json for format
-   ```
-
-5. **Commit and push:**
-   ```bash
-   git add plugins/ catalog.json
-   git commit -m "Add Miller OTA (60 dB, 50 MHz)"
-   git push
-   ```
-
-## 🔐 Security & Authentication
-
-- **No credentials stored in repo** — use `ant auth login` to set up credentials
-- **Local overrides:** Create `.claude/settings.local.json` for machine-specific settings (not tracked)
-- **API key** — set `ANTHROPIC_API_KEY` env var or let `ant auth` handle it
-- **MCP access** — spark-spice endpoint is public (Anthropic-operated); no auth token needed at MCP layer
-
-## 📊 Pricing & Cost Model
-
-### Claude API Costs (Sonnet 4.6)
-- Input: $3/MTok (60% cache hit = $0.90/MTok effective)
-- Output: $15/MTok
-- Typical full design: ~$0.50 (75K tokens)
-
-### spark-spice Compute
-- Feasibility check: free (table lookup)
-- BSIM4 simulation: ~$0.05–$0.26 (50–60s runtime)
-
-**Total per design:** ~$0.55–$0.76
-
-Compare to:
-- Senior engineer (6 hours @ $100/hr): $600
-- EDA tool license (annual): $2,000–$50,000
-- **ROI:** 800–1,000× cheaper than traditional CAD
-
-## 🐛 Troubleshooting
-
-### "spark-spice server not connected"
-```bash
-# Restart Claude Code
-ant --reset
-
-# Verify endpoint in .claude/settings.json:
-# sse://spark-9fd5.anthropic.com/spark-spice
-```
-
-### "BSIM4 simulation failed"
-- Spec may be infeasible (extreme gain/GBW on low power)
-- Run `explore_design_space` first: `ant query "Is [spec] feasible?"`
-- Check the `binding` field in response for limiting constraint
-
-### "Tool not found"
-```bash
-# List available tools
-ant beta:mcp list
-
-# Should show spark-spice tools:
-# - size_analog_block
-# - characterize_device
-# - explore_design_space
-# - recall_designs
-# - query_device_table
-```
-
-## 📖 Full Documentation
-
-See [`.claude/CLAUDE.md`](./.claude/CLAUDE.md) for:
-- Detailed tool reference
-- Design workflow examples
-- Python/SDK integration
-- Performance tuning & cost optimization
-
-## 🤝 Contributing
-
-Contributions welcome! Please:
-1. Run designs and validate results
-2. Add netlists & reports to `plugins/`
-3. Update `catalog.json`
-4. Submit PR with clear commit messages
-
-## 📄 License
-
-MIT License — see LICENSE file for details.
+BSIM4 analog circuit design tools on a DGX Spark GB10.  
+Design Miller OTAs, LC VCOs, and more — directly from Claude Code.
 
 ---
 
-**Questions?** Open an issue or contact the maintainers.  
-**Status:** Active development | Last updated: 2026-09-27
+## Install (2 steps)
+
+### Step 1 — Get an API key
+
+```bash
+curl -X POST http://100.69.76.67:8089/apply \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Your Name","email":"you@example.com"}'
+```
+
+You'll get back a `spk_...` key immediately.
+
+> **Note:** 100.69.76.67 is a Tailscale IP. You need [Tailscale](https://tailscale.com) running and connected to the same network.
+
+---
+
+### Step 2 — Add the MCP server to Claude Code
+
+```bash
+claude mcp add \
+  --transport sse \
+  --header "X-API-Key: spk_YOUR_KEY_HERE" \
+  --scope user \
+  spark-spice \
+  http://100.69.76.67:8090/sse
+```
+
+Restart Claude Code. Done.
+
+---
+
+## Usage
+
+After installing, ask Claude naturally:
+
+| What you say | What runs |
+|---|---|
+| `characterize NMOS 150nm` | `characterize_device` |
+| `gm/Id=12 PMOS noise 是多少` | `query_device_table` |
+| `設計 60dB 50MHz Miller OTA` | `explore_design_space` → `size_analog_block` |
+| `razavi gm/Id 方法設計 OTA` | `size_analog_block(method="razavi")` |
+| `80dB 200MHz 可行嗎` | `explore_design_space` |
+| `5GHz LC VCO, phase noise -110dBc` | `size_vco` |
+| `之前有設計過類似的嗎` | `recall_designs` |
+
+---
+
+## Available Tools
+
+| Tool | Description | Speed |
+|------|-------------|-------|
+| `characterize_device` | gm/Id sweep — Id/W, gm/W, ft, noise, Cgg, Rout | fast |
+| `query_device_table` | Single operating-point lookup | fast |
+| `explore_design_space` | Feasibility check (GPU-accelerated, 2M samples) | ~2s |
+| `size_analog_block` | Miller OTA / OTA-5T sizing + BSIM4 simulation | 1–10 min |
+| `size_vco` | LC VCO design + phase noise simulation | 1–5 min |
+| `recall_designs` | Search previous designs by spec | fast |
+
+---
+
+## Recommended workflow
+
+```
+1. characterize_device   → understand the device at your target inversion level
+2. explore_design_space  → confirm the spec is reachable (seconds, not minutes)
+3. size_analog_block     → get a simulated design with real numbers
+```
+
+Always run `explore_design_space` before `size_analog_block` — it catches infeasible specs in seconds instead of wasting a 10-minute simulation.
+
+---
+
+## Example prompts
+
+```
+幫我設計一個 60dB 50MHz Miller OTA，150µW power，2pF load，razavi gm/Id 方法
+```
+
+```
+NMOS 150nm, gm/Id 從 4 到 20，回傳 ft, γ, 1/f corner, intrinsic gain
+```
+
+```
+80dB 200MHz Miller OTA 可行嗎？binding constraint 是什麼？
+```
+
+```
+設計 5GHz LC VCO，phase noise -110dBc/Hz at 1MHz offset
+```
+
+---
+
+## Requirements
+
+- [Claude Code](https://claude.ai/code) (any version)
+- [Tailscale](https://tailscale.com) — to reach the DGX Spark server at 100.69.76.67
+
+---
+
+## Backend
+
+- **Server:** DGX Spark GB10 (NVIDIA Blackwell, CUDA 13)
+- **Simulator:** BSIM4 level-54 via ngspice
+- **GPU search:** CuPy-accelerated `explore_design_space` — 2M samples in ~1.5s
+- **MCP endpoint:** `http://100.69.76.67:8090/sse`
+- **API endpoint:** `http://100.69.76.67:8089`
