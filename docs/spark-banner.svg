@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 480" width="860" height="480">
+<defs>
+<linearGradient id="pg" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#FFA657"/>
+  <stop offset="100%" stop-color="#3FB950"/>
+</linearGradient>
+<style>
+.h0{opacity:0;animation:fi .4s .1s ease both}
+.g0{opacity:0;animation:fi .5s .4s ease both}
+.g1{opacity:0;animation:su .4s .9s ease both}
+.g2{opacity:0;animation:su .4s 1.5s ease both}
+.t1d{opacity:0;animation:su .4s 3.1s ease both}
+.g3{opacity:0;animation:su .4s 3.4s ease both}
+.t2d{opacity:0;animation:su .3s 5.7s ease both}
+.g5{opacity:0;animation:su .4s 5.8s ease both}
+.c1{opacity:0;animation:su .3s 5.9s ease both}
+.c2{opacity:0;animation:su .3s 6.1s ease both}
+.c3{opacity:0;animation:su .3s 6.3s ease both}
+.c4{opacity:0;animation:su .3s 6.5s ease both}
+.c5{opacity:0;animation:su .3s 6.7s ease both}
+.c6{opacity:0;animation:su .3s 6.9s ease both}
+.vs{opacity:0;animation:su .5s 7.2s ease both}
+.ld{animation:pulse 2s ease-in-out infinite}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes su{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</defs>
+
+<!-- background -->
+<rect width="860" height="480" rx="12" fill="#0D1117"/>
+
+<!-- header -->
+<rect class="h0" x="0" y="0" width="860" height="44" rx="12" fill="#161B22"/>
+<rect class="h0" x="0" y="32" width="860" height="12" fill="#161B22"/>
+<rect class="h0" x="0" y="44" width="860" height="1" fill="#30363D"/>
+<circle class="h0" cx="24" cy="22" r="5" fill="#FF5F57"/>
+<circle class="h0" cx="40" cy="22" r="5" fill="#FFC030"/>
+<circle class="h0" cx="56" cy="22" r="5" fill="#2DCA42"/>
+<text class="h0" x="420" y="27" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E6EDF3">spark-spice  ·  Miller OTA Design  ·  Claude Code</text>
+<rect class="h0" x="750" y="12" width="84" height="20" rx="10" fill="#0D2218" stroke="#3FB950" stroke-opacity=".5" stroke-width="1"/>
+<circle class="ld h0" cx="764" cy="22" r="4" fill="#3FB950"/>
+<text class="h0" x="774" y="26" font-family="'Courier New',monospace" font-size="10" font-weight="600" fill="#3FB950">LIVE</text>
+
+<!-- vertical divider -->
+<rect class="h0" x="434" y="44" width="1" height="390" fill="#30363D"/>
+
+<!-- ── LEFT PANEL ── -->
+
+<!-- spec pills -->
+<text class="g0" x="20" y="56" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing=".08em" fill="#8B949E">DESIGN TARGET</text>
+<g class="g0">
+  <rect x="20"  y="62" width="72" height="16" rx="3" fill="#1C1A10" stroke="#FFA657" stroke-opacity=".4" stroke-width=".8"/>
+  <text x="56"  y="74" text-anchor="middle" font-family="'Courier New',monospace" font-size="8.5" fill="#FFA657">gain ≥60 dB</text>
+  <rect x="98"  y="62" width="78" height="16" rx="3" fill="#1C1A10" stroke="#FFA657" stroke-opacity=".4" stroke-width=".8"/>
+  <text x="137" y="74" text-anchor="middle" font-family="'Courier New',monospace" font-size="8.5" fill="#FFA657">GBW ≥50 MHz</text>
+  <rect x="182" y="62" width="58" height="16" rx="3" fill="#1C1A10" stroke="#FFA657" stroke-opacity=".4" stroke-width=".8"/>
+  <text x="211" y="74" text-anchor="middle" font-family="'Courier New',monospace" font-size="8.5" fill="#FFA657">PM ≥60°</text>
+  <rect x="246" y="62" width="76" height="16" rx="3" fill="#1C1A10" stroke="#FFA657" stroke-opacity=".4" stroke-width=".8"/>
+  <text x="284" y="74" text-anchor="middle" font-family="'Courier New',monospace" font-size="8.5" fill="#FFA657">Pwr ≤150µW</text>
+  <rect x="328" y="62" width="78" height="16" rx="3" fill="#1C1A10" stroke="#FFA657" stroke-opacity=".4" stroke-width=".8"/>
+  <text x="367" y="74" text-anchor="middle" font-family="'Courier New',monospace" font-size="8.5" fill="#FFA657">2pF · Razavi</text>
+</g>
+
+<!-- prompt -->
+<g class="g1">
+  <text x="20" y="92" font-family="system-ui,sans-serif" font-size="9" font-weight="700" letter-spacing=".06em" fill="#58A6FF">YOU</text>
+  <text x="44" y="92" font-family="'Courier New',monospace" font-size="9" fill="#8B949E">09:14:02</text>
+  <rect x="20" y="96" width="400" height="48" rx="5" fill="#0E1825" stroke="#58A6FF" stroke-opacity=".25" stroke-width=".8"/>
+  <text x="32" y="116" font-family="'Courier New',monospace" font-size="11" fill="#E6EDF3">幫我設計 60dB 50MHz Miller OTA，</text>
+  <text x="32" y="134" font-family="'Courier New',monospace" font-size="11" fill="#E6EDF3">150µW power, 2pF load, razavi gm/Id 方法</text>
+</g>
+
+<!-- tool 1: explore_design_space -->
+<g class="g2">
+  <rect x="20" y="154" width="400" height="56" rx="5" fill="#1C2230" stroke="#30363D" stroke-width=".8"/>
+  <rect x="20" y="154" width="400" height="22" rx="5" fill="#241E10"/>
+  <rect x="20" y="165" width="400" height="11" fill="#241E10"/>
+  <text x="32" y="170" font-family="'Courier New',monospace" font-size="10" font-weight="600" fill="#FFA657">⚡ explore_design_space</text>
+  <rect x="32" y="184" width="376" height="5" rx="2.5" fill="#30363D"/>
+  <rect x="32" y="184" width="0" height="5" rx="2.5" fill="url(#pg)">
+    <animate attributeName="width" from="0" to="376" begin="1.7s" dur="1.2s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0.1 0.25 1"/>
+  </rect>
+  <text x="32" y="202" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E">gain_db=60  gbw_hz=50e6  power_w=150e-6  cl_f=2e-12</text>
+</g>
+<text class="t1d" x="296" y="170" font-family="'Courier New',monospace" font-size="9" fill="#3FB950">✓ 1.56 s · GPU · 2M pts</text>
+
+<!-- tool 2: size_analog_block -->
+<g class="g3">
+  <rect x="20" y="220" width="400" height="56" rx="5" fill="#1C2230" stroke="#30363D" stroke-width=".8"/>
+  <rect x="20" y="220" width="400" height="22" rx="5" fill="#241E10"/>
+  <rect x="20" y="231" width="400" height="11" fill="#241E10"/>
+  <text x="32" y="236" font-family="'Courier New',monospace" font-size="10" font-weight="600" fill="#FFA657">⚡ size_analog_block</text>
+  <rect x="32" y="250" width="376" height="5" rx="2.5" fill="#30363D"/>
+  <rect x="32" y="250" width="0" height="5" rx="2.5" fill="url(#pg)">
+    <animate attributeName="width" from="0" to="376" begin="3.6s" dur="2.0s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.25 0.1 0.25 1"/>
+  </rect>
+  <text x="32" y="268" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E">topology=miller_ota  method=razavi  gm_id_in=12  gm_id_load=8</text>
+</g>
+<text class="t2d" x="296" y="236" font-family="'Courier New',monospace" font-size="9" fill="#3FB950">✓ 43 s · ngspice · BSIM4</text>
+
+<!-- verdict -->
+<g class="g5">
+  <rect x="20" y="286" width="400" height="30" rx="5" fill="#0D2218" stroke="#3FB950" stroke-opacity=".4" stroke-width=".8"/>
+  <text x="32" y="306" font-family="system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#3FB950">✓  All 4 specs met in simulation — design complete</text>
+</g>
+
+<!-- sizing lines -->
+<g class="vs">
+  <text x="20" y="332" font-family="'Courier New',monospace" font-size="9" fill="#8B949E">M1,M2: W=12µm L=150nm  gm/Id=12 V⁻¹  Id=37.5µA  (diff pair NMOS)</text>
+  <text x="20" y="348" font-family="'Courier New',monospace" font-size="9" fill="#8B949E">M5: W=18µm L=300nm  gm/Id=10.5       Cc=320fF,  Rz=1.2kΩ</text>
+</g>
+
+<!-- ── RIGHT PANEL ── -->
+
+<text class="g0" x="452" y="56" font-family="system-ui,sans-serif" font-size="9" font-weight="600" letter-spacing=".08em" fill="#8B949E">BSIM4 SIMULATION RESULTS</text>
+
+<!-- card 1: Gain -->
+<g class="c1">
+  <rect x="452" y="62" width="182" height="76" rx="5" fill="#161B22" stroke="#30363D" stroke-width=".8"/>
+  <text x="464" y="80" font-family="system-ui,sans-serif" font-size="8.5" font-weight="600" letter-spacing=".07em" fill="#8B949E">DC GAIN</text>
+  <text x="518" y="80" font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="#3FB950">✓</text>
+  <text x="464" y="114" font-family="'Courier New',monospace" font-size="30" font-weight="700" fill="#3FB950">67.97</text>
+  <text x="558" y="114" font-family="'Courier New',monospace" font-size="13" fill="#8B949E">dB</text>
+  <text x="464" y="130" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E">spec ≥60 dB  +7.97 margin</text>
+</g>
+
+<!-- card 2: GBW -->
+<g class="c2">
+  <rect x="642" y="62" width="182" height="76" rx="5" fill="#161B22" stroke="#30363D" stroke-width=".8"/>
+  <text x="654" y="80" font-family="system-ui,sans-serif" font-size="8.5" font-weight="600" letter-spacing=".07em" fill="#8B949E">GBW</text>
+  <text x="680" y="80" font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="#3FB950">✓</text>
+  <text x="654" y="114" font-family="'Courier New',monospace" font-size="30" font-weight="700" fill="#3FB950">52.05</text>
+  <text x="748" y="114" font-family="'Courier New',monospace" font-size="13" fill="#8B949E">MHz</text>
+  <text x="654" y="130" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E">spec ≥50 MHz  +2.05 margin</text>
+</g>
+
+<!-- card 3: PM -->
+<g class="c3">
+  <rect x="452" y="146" width="182" height="76" rx="5" fill="#161B22" stroke="#30363D" stroke-width=".8"/>
+  <text x="464" y="164" font-family="system-ui,sans-serif" font-size="8.5" font-weight="600" letter-spacing=".07em" fill="#8B949E">PHASE MARGIN</text>
+  <text x="556" y="164" font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="#3FB950">✓</text>
+  <text x="464" y="198" font-family="'Courier New',monospace" font-size="30" font-weight="700" fill="#3FB950">84.27</text>
+  <text x="558" y="198" font-family="'Courier New',monospace" font-size="13" fill="#8B949E">°</text>
+  <text x="464" y="214" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E">spec ≥60°  +24° margin</text>
+</g>
+
+<!-- card 4: Power -->
+<g class="c4">
+  <rect x="642" y="146" width="182" height="76" rx="5" fill="#161B22" stroke="#30363D" stroke-width=".8"/>
+  <text x="654" y="164" font-family="system-ui,sans-serif" font-size="8.5" font-weight="600" letter-spacing=".07em" fill="#8B949E">POWER</text>
+  <text x="697" y="164" font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="#3FB950">✓</text>
+  <text x="654" y="198" font-family="'Courier New',monospace" font-size="30" font-weight="700" fill="#3FB950">148</text>
+  <text x="712" y="198" font-family="'Courier New',monospace" font-size="13" fill="#8B949E">µW</text>
+  <text x="654" y="214" font-family="'Courier New',monospace" font-size="8.5" fill="#8B949E">spec ≤150µW  2µW margin</text>
+</g>
+
+<!-- card 5: Noise -->
+<g class="c5">
+  <rect x="452" y="230" width="182" height="44" rx="5" fill="#161B22" stroke="#30363D" stroke-width=".8"/>
+  <text x="464" y="247" font-family="system-ui,sans-serif" font-size="8.5" font-weight="600" letter-spacing=".07em" fill="#8B949E">INPUT NOISE</text>
+  <text x="464" y="266" font-family="'Courier New',monospace" font-size="15" font-weight="600" fill="#E6EDF3">17.8 nV/√Hz</text>
+</g>
+
+<!-- card 6: 1/f -->
+<g class="c6">
+  <rect x="642" y="230" width="182" height="44" rx="5" fill="#161B22" stroke="#30363D" stroke-width=".8"/>
+  <text x="654" y="247" font-family="system-ui,sans-serif" font-size="8.5" font-weight="600" letter-spacing=".07em" fill="#8B949E">1/f CORNER</text>
+  <text x="654" y="266" font-family="'Courier New',monospace" font-size="15" font-weight="600" fill="#E6EDF3">118 MHz</text>
+</g>
+
+<!-- sizing table -->
+<g class="vs">
+  <rect x="452" y="282" width="372" height="108" rx="5" fill="#161B22" stroke="#30363D" stroke-width=".8"/>
+  <rect x="452" y="282" width="372" height="20" rx="5" fill="#1C2230"/>
+  <rect x="452" y="292" width="372" height="10" fill="#1C2230"/>
+  <text x="464" y="297" font-family="system-ui,sans-serif" font-size="8.5" font-weight="600" letter-spacing=".07em" fill="#8B949E">TRANSISTOR SIZING  (Razavi 8-step gm/Id)</text>
+  <text x="464" y="317" font-family="'Courier New',monospace" font-size="9.5" fill="#FFA657">M1,M2</text>
+  <text x="508" y="317" font-family="'Courier New',monospace" font-size="9.5" fill="#8B949E">diff pair NMOS</text>
+  <text x="636" y="317" font-family="'Courier New',monospace" font-size="9.5" fill="#E6EDF3">12.0/0.15µm</text>
+  <text x="726" y="317" font-family="'Courier New',monospace" font-size="9.5" fill="#58A6FF">gm/Id 12</text>
+  <text x="464" y="333" font-family="'Courier New',monospace" font-size="9.5" fill="#FFA657">M3,M4</text>
+  <text x="508" y="333" font-family="'Courier New',monospace" font-size="9.5" fill="#8B949E">mirror PMOS</text>
+  <text x="636" y="333" font-family="'Courier New',monospace" font-size="9.5" fill="#E6EDF3">9.6/0.15µm</text>
+  <text x="726" y="333" font-family="'Courier New',monospace" font-size="9.5" fill="#58A6FF">gm/Id 8</text>
+  <text x="464" y="349" font-family="'Courier New',monospace" font-size="9.5" fill="#FFA657">M5</text>
+  <text x="508" y="349" font-family="'Courier New',monospace" font-size="9.5" fill="#8B949E">tail NMOS</text>
+  <text x="636" y="349" font-family="'Courier New',monospace" font-size="9.5" fill="#E6EDF3">18.0/0.30µm</text>
+  <text x="726" y="349" font-family="'Courier New',monospace" font-size="9.5" fill="#58A6FF">gm/Id 10.5</text>
+  <text x="464" y="365" font-family="'Courier New',monospace" font-size="9.5" fill="#FFA657">Cc</text>
+  <text x="508" y="365" font-family="'Courier New',monospace" font-size="9.5" fill="#8B949E">Miller cap</text>
+  <text x="636" y="365" font-family="'Courier New',monospace" font-size="9.5" fill="#E6EDF3">320 fF</text>
+  <text x="726" y="365" font-family="'Courier New',monospace" font-size="9.5" fill="#E6EDF3">Rz=1.2kΩ</text>
+  <rect x="452" y="374" width="372" height="16" fill="#0C1C0C"/>
+  <rect x="452" y="374" width="372" height="16" fill="none"/>
+  <text x="464" y="386" font-family="'Courier New',monospace" font-size="8.5" fill="#3FB950">GPU: 2M samples · 1.56s · DGX Spark GB10 (Blackwell, CUDA 13)</text>
+</g>
+
+<!-- footer -->
+<rect x="0" y="434" width="860" height="46" rx="12" fill="#161B22"/>
+<rect x="0" y="434" width="860" height="12" fill="#161B22"/>
+<rect x="0" y="434" width="860" height="1" fill="#30363D"/>
+<text x="20" y="461" font-family="'Courier New',monospace" font-size="9.5" fill="#8B949E">DGX Spark GB10  ·  BSIM4 level-54  ·  ngspice 42  ·  GPU: 2M samples / 1.56 s  ·  Sim: 43 s</text>
+<text x="840" y="461" text-anchor="end" font-family="'Courier New',monospace" font-size="9.5" fill="#58A6FF">spark-spice-marketplace</text>
+</svg>

@@ -1,5 +1,7 @@
 # Spark SPICE — Analog Design MCP for Claude Code
 
+![Spark SPICE Demo](docs/spark-banner.svg)
+
 BSIM4 analog circuit design tools on a DGX Spark GB10.  
 Design Miller OTAs, LC VCOs, and more — directly from Claude Code.
 
