@@ -1,0 +1,597 @@
+<title>Spark SPICE Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg:     #0D1117;
+    --s1:     #161B22;
+    --s2:     #1C2230;
+    --bd:     #30363D;
+    --txt:    #E6EDF3;
+    --dim:    #8B949E;
+    --blue:   #58A6FF;
+    --green:  #3FB950;
+    --amber:  #FFA657;
+    --purple: #BC8CFF;
+    --red:    #FF7B72;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.6;
+    padding:32px 16px 80px;max-width:860px;margin:0 auto;
+  }
+
+  /* ── Header ── */
+  .header{
+    text-align:center;padding-bottom:32px;
+    border-bottom:1px solid var(--bd);margin-bottom:36px;
+    animation:fadeDown .6s ease both;
+  }
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--s1);border:1px solid var(--bd);border-radius:100px;
+    padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--green);margin-bottom:16px;
+  }
+  .pulse{
+    width:7px;height:7px;border-radius:50%;background:var(--green);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+  .header h1{font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px}
+  .header h1 em{font-style:normal;color:var(--blue)}
+  .header p{color:var(--dim);font-size:13px}
+
+  /* ── Spec strip ── */
+  .spec-strip{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+    margin-bottom:36px;
+    animation:fadeDown .6s .1s ease both;
+  }
+  .spec-pill{
+    background:var(--s1);border:1px solid var(--bd);border-radius:8px;
+    padding:8px 14px;text-align:center;
+  }
+  .spec-pill .label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+  .spec-pill .value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);font-weight:600}
+
+  /* ── Timeline ── */
+  .timeline{position:relative}
+  .timeline::before{
+    content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;
+    background:linear-gradient(to bottom,var(--blue),var(--purple),var(--amber),var(--green));
+    opacity:.3;
+  }
+
+  /* ── Turn ── */
+  .turn{
+    display:flex;gap:16px;margin-bottom:28px;padding-left:44px;position:relative;
+    opacity:0;transform:translateY(16px);
+    transition:opacity .5s ease,transform .5s ease;
+  }
+  .turn.visible{opacity:1;transform:translateY(0)}
+
+  .dot{
+    position:absolute;left:7px;top:6px;
+    width:16px;height:16px;border-radius:50%;
+    border:2px solid var(--bd);background:var(--bg);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    transition:border-color .4s,background .4s,box-shadow .4s;
+  }
+  .dot.u{border-color:var(--blue);background:rgba(88,166,255,.15)}
+  .dot.c{border-color:var(--purple);background:rgba(188,140,255,.15)}
+  .dot.t{border-color:var(--amber);background:rgba(255,166,87,.15)}
+  .dot.active{box-shadow:0 0 0 4px rgba(88,166,255,.2)}
+  .dot-inner{width:6px;height:6px;border-radius:50%}
+  .dot.u .dot-inner{background:var(--blue)}
+  .dot.c .dot-inner{background:var(--purple)}
+  .dot.t .dot-inner{background:var(--amber)}
+
+  .turn-body{flex:1;min-width:0}
+  .turn-meta{
+    font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;
+    margin-bottom:7px;display:flex;align-items:center;gap:8px;
+  }
+  .turn-meta.u{color:var(--blue)}
+  .turn-meta.c{color:var(--purple)}
+  .turn-meta.t{color:var(--amber)}
+  .ts{color:var(--dim);font-weight:400;font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:none;letter-spacing:0}
+
+  /* ── Bubble ── */
+  .bubble{
+    background:var(--s1);border:1px solid var(--bd);border-radius:10px;
+    padding:13px 16px;font-size:13px;
+  }
+  .bubble.user{border-color:rgba(88,166,255,.25);background:rgba(88,166,255,.06)}
+  .bubble.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--txt)}
+
+  /* ── Tool block ── */
+  .tool-block{
+    background:var(--s2);border:1px solid var(--bd);border-radius:10px;overflow:hidden;
+  }
+  .tool-head{
+    display:flex;align-items:center;gap:10px;padding:10px 16px;
+    background:rgba(255,166,87,.06);border-bottom:1px solid var(--bd);
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+  }
+  .tool-name{color:var(--amber);font-weight:600;font-size:12px}
+  .tool-dur{margin-left:auto;color:var(--green);opacity:0;transition:opacity .4s .2s}
+  .tool-dur.show{opacity:1}
+
+  /* Progress bar */
+  .progress-wrap{
+    height:3px;background:var(--bd);overflow:hidden;
+    transition:opacity .3s;
+  }
+  .progress-bar{
+    height:100%;background:linear-gradient(90deg,var(--amber),var(--green));
+    width:0;transition:width 0s linear;
+  }
+  .progress-bar.run{width:95%}
+  .progress-bar.done{width:100%;transition:width .15s linear}
+
+  .tool-params{
+    padding:10px 16px;border-bottom:1px solid var(--bd);
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);
+    line-height:1.9;
+  }
+  .pk{color:var(--blue)} .pv{color:var(--purple)} .ps{color:var(--green)}
+
+  /* Results grid */
+  .results-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;
+    padding:16px;
+  }
+  .r-cell{
+    background:var(--bg);border:1px solid var(--bd);border-radius:8px;
+    padding:10px 14px;
+    opacity:0;transform:scale(.93);
+    transition:opacity .35s ease,transform .35s ease;
+  }
+  .r-cell.show{opacity:1;transform:scale(1)}
+  .r-label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .r-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;line-height:1.2}
+  .r-val.pass{color:var(--green)} .r-val.neu{color:var(--txt)} .r-val.warn{color:var(--amber)}
+  .r-spec{font-size:10px;color:var(--dim);margin-top:3px;font-family:'JetBrains Mono',monospace}
+  .r-check{color:var(--green);opacity:0;transition:opacity .3s .5s}
+  .r-cell.show .r-check{opacity:1}
+
+  /* GPU bar chart */
+  .gpu-visual{
+    padding:14px 16px;border-bottom:1px solid var(--bd);
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .gpu-label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+  .gpu-row{display:flex;align-items:center;gap:10px}
+  .gpu-name{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);width:60px;text-align:right;flex-shrink:0}
+  .gpu-track{flex:1;height:8px;background:var(--bd);border-radius:4px;overflow:hidden}
+  .gpu-fill{height:100%;border-radius:4px;width:0;transition:width 1s ease}
+  .gpu-fill.sm{background:linear-gradient(90deg,#2D6EA8,var(--blue))}
+  .gpu-fill.cu{background:linear-gradient(90deg,#1A5C37,var(--green))}
+  .gpu-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);width:44px;flex-shrink:0}
+
+  /* Sizing table */
+  .sizing-wrap{overflow-x:auto}
+  .sizing-table{width:100%;border-collapse:collapse;font-size:12px}
+  .sizing-table th{
+    text-align:left;padding:7px 12px;font-size:10px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.07em;color:var(--dim);
+    border-bottom:1px solid var(--bd);background:rgba(255,255,255,.03);
+    white-space:nowrap;
+  }
+  .sizing-table td{padding:7px 12px;border-bottom:1px solid var(--bd);white-space:nowrap}
+  .sizing-table tr:last-child td{border-bottom:none}
+  .tr-reveal{opacity:0;transform:translateX(-8px);transition:opacity .3s ease,transform .3s ease}
+  .tr-reveal.show{opacity:1;transform:translateX(0)}
+  .dev{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:11.5px}
+  .role{color:var(--dim);font-size:11px}
+  .num{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--txt)}
+  .gmid-val{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--blue)}
+
+  /* Narr */
+  .narr{font-size:13px;color:var(--dim);line-height:1.75;margin-bottom:10px}
+  .narr strong{color:var(--txt);font-weight:500}
+  .narr code{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    background:var(--s2);padding:1px 6px;border-radius:4px;color:var(--amber);
+  }
+
+  /* Verdict */
+  .verdict{
+    background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.25);
+    border-radius:8px;padding:14px 18px;display:flex;gap:12px;margin-top:14px;
+    opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;
+  }
+  .verdict.show{opacity:1;transform:translateY(0)}
+  .v-icon{font-size:20px;line-height:1.3;flex-shrink:0}
+  .v-text strong{color:var(--green);display:block;margin-bottom:4px;font-size:13.5px;font-weight:600}
+  .v-text{font-size:13px;line-height:1.65}
+
+  /* Typing cursor */
+  .cursor{
+    display:inline-block;width:2px;height:1em;background:var(--blue);
+    margin-left:2px;vertical-align:text-bottom;
+    animation:blink .8s step-end infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* Scan line (decorative) */
+  .scan-line{
+    position:fixed;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--blue),var(--green),transparent);
+    animation:scan 3s ease-in-out infinite;
+    pointer-events:none;opacity:.4;
+    z-index:100;
+  }
+  @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Footer */
+  .footer{
+    border-top:1px solid var(--bd);padding-top:20px;margin-top:36px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  .footer-l{font-size:11px;color:var(--dim)}
+  .footer-r{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)}
+
+  @media(max-width:600px){
+    .spec-strip{gap:6px}
+    .results-grid{grid-template-columns:repeat(2,1fr)}
+    .turn{padding-left:36px}
+  }
+</style>
+
+<div class="scan-line"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="badge"><div class="pulse"></div>spark-spice · DGX GB10 · live session</div>
+  <h1>Designing a <em>Miller OTA</em><br>with Claude Code + Spark SPICE</h1>
+  <p>Full BSIM4 simulation via Razavi gm/Id methodology — natural language to verified design</p>
+</div>
+
+<!-- Spec strip -->
+<div class="spec-strip">
+  <div class="spec-pill"><div class="label">Gain</div><div class="value">≥ 60 dB</div></div>
+  <div class="spec-pill"><div class="label">GBW</div><div class="value">≥ 50 MHz</div></div>
+  <div class="spec-pill"><div class="label">Phase margin</div><div class="value">≥ 60°</div></div>
+  <div class="spec-pill"><div class="label">Power</div><div class="value">≤ 150 µW</div></div>
+  <div class="spec-pill"><div class="label">Load</div><div class="value">2 pF</div></div>
+  <div class="spec-pill"><div class="label">Method</div><div class="value">Razavi</div></div>
+</div>
+
+<!-- Timeline -->
+<div class="timeline">
+
+  <!-- Turn 1 — User -->
+  <div class="turn" id="t1">
+    <div class="dot u"><div class="dot-inner"></div></div>
+    <div class="turn-body">
+      <div class="turn-meta u">You <span class="ts">09:14:02</span></div>
+      <div class="bubble user mono" id="prompt1"></div>
+    </div>
+  </div>
+
+  <!-- Turn 2 — Claude -->
+  <div class="turn" id="t2">
+    <div class="dot c"><div class="dot-inner"></div></div>
+    <div class="turn-body">
+      <div class="turn-meta c">Claude</div>
+      <div class="bubble">
+        <div class="narr">先用 <code>explore_design_space</code> 確認這組 spec 在 BSIM4 模型下可行，再跑完整模擬。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Turn 3 — Tool: explore -->
+  <div class="turn" id="t3">
+    <div class="dot t"><div class="dot-inner"></div></div>
+    <div class="turn-body">
+      <div class="turn-meta t">Tool call</div>
+      <div class="tool-block" id="tool1">
+        <div class="tool-head">
+          <span class="tool-name">explore_design_space</span>
+          <span id="tool1-state" style="color:var(--dim);font-size:10px">running…</span>
+          <span class="tool-dur" id="tool1-dur">✓ 1.56 s &nbsp;·&nbsp; GPU 2M samples</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="pb1"></div></div>
+        <div class="tool-params">
+          <span class="pk">topology</span>=<span class="pv">"miller_ota"</span>  &nbsp;
+          <span class="pk">gain_db</span>=<span class="ps">60</span>  &nbsp;
+          <span class="pk">gbw_hz</span>=<span class="ps">50e6</span>  &nbsp;
+          <span class="pk">power_w</span>=<span class="ps">150e-6</span>  &nbsp;
+          <span class="pk">cl_f</span>=<span class="ps">2e-12</span>
+        </div>
+        <!-- GPU visual -->
+        <div class="gpu-visual" id="gpu-vis">
+          <div class="gpu-label">GPU utilisation</div>
+          <div class="gpu-row">
+            <span class="gpu-name">CUDA</span>
+            <div class="gpu-track"><div class="gpu-fill cu" id="gf-cuda" style="--w:88%"></div></div>
+            <span class="gpu-num" id="gn-cuda">0%</span>
+          </div>
+          <div class="gpu-row">
+            <span class="gpu-name">Mem</span>
+            <div class="gpu-track"><div class="gpu-fill sm" id="gf-mem" style="--w:34%"></div></div>
+            <span class="gpu-num" id="gn-mem">0%</span>
+          </div>
+          <div class="gpu-row">
+            <span class="gpu-name">Samples</span>
+            <div class="gpu-track"><div class="gpu-fill cu" id="gf-smp" style="--w:100%"></div></div>
+            <span class="gpu-num" id="gn-smp">0M</span>
+          </div>
+        </div>
+        <div class="results-grid" id="rg1" style="display:none">
+          <div class="r-cell" id="rc1-1">
+            <div class="r-label">Feasible</div>
+            <div class="r-val pass">Yes ✓</div>
+            <div class="r-spec">FOM = 0.00</div>
+          </div>
+          <div class="r-cell" id="rc1-2">
+            <div class="r-label">Best FOM</div>
+            <div class="r-val neu" id="rv-fom">0.00</div>
+            <div class="r-spec">converged</div>
+          </div>
+          <div class="r-cell" id="rc1-3">
+            <div class="r-label">Samples</div>
+            <div class="r-val neu">2.0 M</div>
+            <div class="r-spec">GPU random</div>
+          </div>
+          <div class="r-cell" id="rc1-4">
+            <div class="r-label">Elapsed</div>
+            <div class="r-val neu">1.56 s</div>
+            <div class="r-spec">DGX GB10</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Turn 4 — Claude -->
+  <div class="turn" id="t4">
+    <div class="dot c"><div class="dot-inner"></div></div>
+    <div class="turn-body">
+      <div class="turn-meta c">Claude</div>
+      <div class="bubble">
+        <div class="narr">Spec 可達。現在跑 Razavi gm/Id 8 步流程：從 GBW 推算 <code>gm1</code>，選 <code>gm/Id=12 V⁻¹</code> 作為輸入對工作點，推算 W/L，最後在 BSIM4 level-54 ngspice 中驗證。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Turn 5 — Tool: size -->
+  <div class="turn" id="t5">
+    <div class="dot t"><div class="dot-inner"></div></div>
+    <div class="turn-body">
+      <div class="turn-meta t">Tool call</div>
+      <div class="tool-block" id="tool2">
+        <div class="tool-head">
+          <span class="tool-name">size_analog_block</span>
+          <span id="tool2-state" style="color:var(--dim);font-size:10px">running…</span>
+          <span class="tool-dur" id="tool2-dur">✓ 43 s &nbsp;·&nbsp; ngspice .op + .ac + .noise</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="pb2"></div></div>
+        <div class="tool-params">
+          <span class="pk">topology</span>=<span class="pv">"miller_ota"</span>  &nbsp;
+          <span class="pk">method</span>=<span class="pv">"razavi"</span>  &nbsp;
+          <span class="pk">gm_id_in</span>=<span class="ps">12</span>  &nbsp;
+          <span class="pk">gm_id_load</span>=<span class="ps">8</span>  &nbsp;
+          <span class="pk">gain_db</span>=<span class="ps">60</span>  &nbsp;
+          <span class="pk">gbw_hz</span>=<span class="ps">50e6</span>
+        </div>
+        <div class="results-grid" id="rg2" style="display:none">
+          <div class="r-cell" id="rc2-1">
+            <div class="r-label">DC Gain <span class="r-check" id="ck1">✓</span></div>
+            <div class="r-val pass"><span id="rv-gain">0</span> dB</div>
+            <div class="r-spec">spec ≥60 dB</div>
+          </div>
+          <div class="r-cell" id="rc2-2">
+            <div class="r-label">GBW <span class="r-check" id="ck2">✓</span></div>
+            <div class="r-val pass"><span id="rv-gbw">0</span> MHz</div>
+            <div class="r-spec">spec ≥50 MHz</div>
+          </div>
+          <div class="r-cell" id="rc2-3">
+            <div class="r-label">Phase Margin <span class="r-check" id="ck3">✓</span></div>
+            <div class="r-val pass"><span id="rv-pm">0</span>°</div>
+            <div class="r-spec">spec ≥60°</div>
+          </div>
+          <div class="r-cell" id="rc2-4">
+            <div class="r-label">Power <span class="r-check" id="ck4">✓</span></div>
+            <div class="r-val pass"><span id="rv-pwr">0</span> µW</div>
+            <div class="r-spec">spec ≤150 µW</div>
+          </div>
+          <div class="r-cell" id="rc2-5">
+            <div class="r-label">Input Noise</div>
+            <div class="r-val neu">17.8 nV/√Hz</div>
+            <div class="r-spec">white (1 kHz)</div>
+          </div>
+          <div class="r-cell" id="rc2-6">
+            <div class="r-label">1/f Corner</div>
+            <div class="r-val neu">118 MHz</div>
+            <div class="r-spec">NMOS M1/M2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Turn 6 — Claude final -->
+  <div class="turn" id="t6">
+    <div class="dot c"><div class="dot-inner"></div></div>
+    <div class="turn-body">
+      <div class="turn-meta c">Claude</div>
+      <div class="bubble">
+        <div class="narr" style="margin-bottom:14px">所有 spec 通過。Razavi 8 步流程推出的 transistor sizing：</div>
+        <div class="sizing-wrap">
+          <table class="sizing-table">
+            <thead>
+              <tr>
+                <th>Device</th><th>Role</th>
+                <th>W / L (µm)</th><th>gm/Id</th>
+                <th>Id (µA)</th><th>Vgs−Vth (mV)</th>
+              </tr>
+            </thead>
+            <tbody id="sizing-tbody"></tbody>
+          </table>
+        </div>
+        <div class="verdict" id="verdict">
+          <div class="v-icon">✓</div>
+          <div class="v-text">
+            <strong>Design complete — all 4 specs met in simulation</strong>
+            Gain +7.97 dB margin · GBW +2.05 MHz margin · PM +24° margin · Power 2 µW under budget.
+            Ready to export netlist or recall later with <code>recall_designs</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /timeline -->
+
+<div class="footer">
+  <div class="footer-l">DGX Spark GB10 · BSIM4 ngspice 42 · GPU: 2M samples / 1.56 s · Sim: 43 s</div>
+  <div class="footer-r">spark-spice-marketplace</div>
+</div>
+
+<script>
+// ── helpers ──────────────────────────────────────────────────────────────────
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)) }
+
+function countUp(el, target, decimals, suffix, duration){
+  const start = Date.now(), from = 0
+  const fmt = v => v.toFixed(decimals) + suffix
+  const tick = () => {
+    const p = Math.min((Date.now()-start)/duration, 1)
+    const ease = 1 - Math.pow(1-p, 3)
+    el.textContent = fmt(from + (target-from)*ease)
+    if(p < 1) requestAnimationFrame(tick)
+    else el.textContent = fmt(target)
+  }
+  requestAnimationFrame(tick)
+}
+
+// ── typing ───────────────────────────────────────────────────────────────────
+async function typeInto(el, text, speed=30){
+  el.innerHTML = ''
+  const cur = document.createElement('span'); cur.className='cursor'; el.appendChild(cur)
+  for(const ch of text){
+    const t = document.createTextNode(ch)
+    el.insertBefore(t, cur)
+    await delay(speed + Math.random()*20)
+  }
+  cur.remove()
+}
+
+// ── reveal turn (visibility) ─────────────────────────────────────────────────
+function showTurn(id){ document.getElementById(id).classList.add('visible') }
+
+// ── GPU bar animation ─────────────────────────────────────────────────────────
+function animateGPU(){
+  document.getElementById('gf-cuda').style.width='88%'
+  document.getElementById('gf-mem').style.width='34%'
+  document.getElementById('gf-smp').style.width='100%'
+  countUp(document.getElementById('gn-cuda'), 88, 0, '%', 1200)
+  countUp(document.getElementById('gn-mem'),  34, 0, '%', 1000)
+  countUp(document.getElementById('gn-smp'),   2, 1, 'M', 1400)
+}
+
+// ── results grid reveal ───────────────────────────────────────────────────────
+function showGrid(gridId, cellIds){
+  const grid = document.getElementById(gridId)
+  grid.style.display = ''
+  cellIds.forEach((id, i) => {
+    setTimeout(() => document.getElementById(id).classList.add('show'), i * 100)
+  })
+}
+
+// ── progress bar ──────────────────────────────────────────────────────────────
+async function runProgress(pbId, stateId, durId, simDuration){
+  const pb = document.getElementById(pbId)
+  const st = document.getElementById(stateId)
+  const dr = document.getElementById(durId)
+  pb.style.transition = `width ${simDuration}ms linear`
+  pb.classList.add('run')
+  await delay(simDuration)
+  pb.classList.add('done')
+  st.textContent = 'done'
+  st.style.color = 'var(--green)'
+  dr.classList.add('show')
+}
+
+// ── sizing table rows ─────────────────────────────────────────────────────────
+const rows = [
+  ['M1, M2','Diff pair (NMOS)','12.0 / 0.15','12.0','37.5','168'],
+  ['M3, M4','Mirror load (PMOS)','9.6 / 0.15','8.0','37.5','−210'],
+  ['M5','Tail current (NMOS)','18.0 / 0.30','10.5','75.0','143'],
+  ['M6','Output stage (NMOS)','24.0 / 0.15','9.2','68.0','155'],
+  ['M7','Output bias (PMOS)','10.8 / 0.15','7.8','68.0','−225'],
+  ['Cc','Miller cap','320 fF · Rz = 1.2 kΩ','—','—','—'],
+]
+function buildTable(){
+  const tb = document.getElementById('sizing-tbody')
+  rows.forEach((r,i)=>{
+    const tr = document.createElement('tr')
+    tr.className = 'tr-reveal'
+    tr.innerHTML = `<td class="dev">${r[0]}</td><td class="role">${r[1]}</td>
+      <td class="num">${r[2]}</td><td class="gmid-val">${r[3]}</td>
+      <td class="num">${r[4]}</td><td class="num">${r[5]}</td>`
+    tb.appendChild(tr)
+    setTimeout(()=>tr.classList.add('show'), i * 80)
+  })
+}
+
+// ── main sequence ─────────────────────────────────────────────────────────────
+async function run(){
+  await delay(400)
+
+  // Turn 1 — user prompt
+  showTurn('t1')
+  await delay(200)
+  await typeInto(document.getElementById('prompt1'),
+    '幫我設計 60dB 50MHz Miller OTA，150µW power，2pF load，razavi gm/Id 方法', 28)
+
+  await delay(600)
+
+  // Turn 2 — Claude
+  showTurn('t2')
+  await delay(1000)
+
+  // Turn 3 — explore tool
+  showTurn('t3')
+  await delay(300)
+  animateGPU()
+  runProgress('pb1','tool1-state','tool1-dur', 2000)
+  await delay(2400)
+  document.getElementById('gpu-vis').style.display='none'
+  showGrid('rg1',['rc1-1','rc1-2','rc1-3','rc1-4'])
+  await delay(900)
+
+  // Turn 4 — Claude
+  showTurn('t4')
+  await delay(1000)
+
+  // Turn 5 — size tool
+  showTurn('t5')
+  runProgress('pb2','tool2-state','tool2-dur', 3500)
+  await delay(3800)
+  showGrid('rg2',['rc2-1','rc2-2','rc2-3','rc2-4','rc2-5','rc2-6'])
+  await delay(300)
+  countUp(document.getElementById('rv-gain'),  67.97, 2, '', 800)
+  countUp(document.getElementById('rv-gbw'),   52.05, 2, '', 800)
+  countUp(document.getElementById('rv-pm'),    84.27, 1, '', 800)
+  countUp(document.getElementById('rv-pwr'),   148,   0, '', 800)
+  await delay(1000)
+
+  // Turn 6 — sizing + verdict
+  showTurn('t6')
+  await delay(200)
+  buildTable()
+  await delay(rows.length * 80 + 300)
+  document.getElementById('verdict').classList.add('show')
+}
+
+document.addEventListener('DOMContentLoaded', run)
+</script>
